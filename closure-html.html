@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <section>
+      <p>
+        This is an example of closures in Javascript
+      </p>
+    </section>
+  </body>
+  <script>
+    //	Define	a	function	that	sets	a	DOM	node's	color
+    //	to	yellow	and	then	fades	it	to	white.
+    var fade = function(node) {
+      var level = 1;
+      var step = function() {
+        var hex = level.toString(16);
+        node.style.backgroundColor = "#FFFF" + hex + hex;
+        if (level < 15) {
+          level += 1;
+          setTimeout(step, 100);
+        }
+      };
+      setTimeout(step, 100);
+    };
+    fade(document.body);
+
+    //	BAD	EXAMPLE
+    //	Make	a	function	that	assigns	event	handler	functions	to	an	array
+    // of	nodes	the	wrong	way.
+    //	When	you	click	on	a	node,	an	alert	box	is	supposed	to	display	the	ordinal
+    // of	the	node.
+    //	But	it	always	displays	the	number	of	nodes	instead.
+    // var add_the_handlers = function(nodes) {
+    //   var i;
+    //   for (i = 0; i < nodes.length; i += 1) {
+    //     nodes[i].onclick = function(e) {
+    //       alert(i);
+    //     };
+    //   }
+    // };
+    // add_the_handlers(document.childNodes);
+    //	END	BAD	EXAMPLE
+    // The	 add_the_handlers 	function	was	intended	to	give	each	handler	a	unique	number	 i .	It	fails	because
+    // the	handler	functions	are	bound	to	the	variable	 i ,	not	the	value	of	the	variable	 i 	at	the	time	the	function
+    // was	made.
+
+    // BETTER EXAMPLE
+    var add_the_handlers = function(nodes) {
+      var helper = function(e) {
+        return function() {
+          alert(e);
+        };
+      };
+      var i;
+      for (i = 0; i < nodes.length; i += 1) {
+        nodes[i].onclick = helper(i);
+      }
+    };
+    add_the_handlers(document.childNodes);
+    // END BETTER EXAMPLE
+  </script>
+</html>
+
+<!-- We call fade , passing it document.body (the node created by the HTML
+<body> tag). fade sets level to 1. It defines a step function. It calls setTimeout ,
+  passing it the step function and a time (100 milliseconds). It then returns—
+  fade has finished. Suddenly, about a 10th of a second later, the step function
+  gets invoked. It makes a base 16 character from fade 's level . It then
+  modifies the background color of fade 's node. It then looks at fade 's level
+  . If it hasn't gotten to white yet, it then increments fade 's level and uses
+  setTimeout to schedule itself to run again. Suddenly, the step function gets
+  invoked again. But this time, fade 's level is 2. fade returned a while ago,
+  but its variables continue to live as long as they are needed by one or more
+  of fade 's inner functions. It is important to understand that the inner
+  function has access to the actual variables of the outer functions and not
+  copies in order to avoid the following problem. -->
